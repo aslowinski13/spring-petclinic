@@ -1,0 +1,13 @@
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+  config.vm.network "forwarded_port", guest: 8080, host: 8484
+  config.vm.synced_folder ".", "/home/vagrant/sync", disabled: true
+  config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.provision :docker
+  config.vm.provision :docker_compose
+  config.vm.provision :file, source: "spring-petclinic-2.2.0.BUILD-SNAPSHOT.jar", destination: "/home/vagrant/spring-petclinic-2.2.0-BUILD-SNAPSHOT"
+  config.vm.provision :file, source: "Dockerfile", destination: "/home/vagrant/Dockerfile"
+  config.vm.provision "docker" do |docker|
+     docker.build_image "/vagrant", args: "-t se441/spring-petclinic:standalone"
+  end
+end
